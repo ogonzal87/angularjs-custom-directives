@@ -62,7 +62,7 @@ app.config(function ($httpProvider, $resourceProvider, laddaProvider, $datepicke
 app.filter('defaultImage', function () {
 	return function (input, param) {
 		if (!input) {
-			return param
+			return param;
 		}
 		return input;
 	}
@@ -75,6 +75,47 @@ app.factory("Contact", function ($resource) {
 		}
 	});
 });
+
+
+app.directive('ccSpinner', function(){
+	return {
+		scope: {
+			'isLoading': '=',
+			'message': '@'
+		},
+		// controller: function($scope) {},
+		restrict: 'AE',
+		templateUrl: 'templates/spinner.html',
+		transclude: true,
+		link: function($scope, iElm, iAttrs, controller) {
+
+		}
+	};
+});
+
+app.directive('ccCard', function(){
+	return {
+		scope: {
+			'user': '='
+		},
+		controller: function($scope, ContactService) {
+			$scope.isDeleting = false;
+			$scope.deleteUser = function() {
+				$scope.isDeleting = true;
+				ContactService.removeContact($scope.user).then(function() {
+					$scope.isDeleting = false;
+				});
+			};
+
+		},
+		restrict: 'AE', // E = Element, A = Attribute, C = Class, M = Comment
+		templateUrl: 'templates/card.html',
+		link: function($scope, iElm, iAttrs, controller) {
+
+		}
+	};
+});
+
 
 app.controller('PersonDetailController', function ($scope, $stateParams, $state, ContactService) {
 	$scope.mode = "Edit";
@@ -122,14 +163,6 @@ app.controller('PersonListController', function ($scope, $modal, ContactService)
 		$scope.contacts.loadMore();
 	};
 
-	$scope.showCreateModal = function () {
-		$scope.contacts.selectedPerson = {};
-		$scope.createModal = $modal({
-			scope: $scope,
-			template: 'templates/modal.create.tpl.html',
-			show: true
-		})
-	};
 
 
 });
